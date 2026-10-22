@@ -1,0 +1,2 @@
+# Script/cấu hình chạy trên Linux phải giữ xuống dòng LF
+deploy/** text eol=lf
