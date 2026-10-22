@@ -19,3 +19,9 @@ String showRange(String start, String end) {
   final hm = DateFormat('HH:mm');
   return '${day[0].toUpperCase()}${day.substring(1)} · ${hm.format(s)}–${hm.format(e)}';
 }
+
+/// "15:03–16:33" (dùng cạnh ô ngày, không lặp lại ngày)
+String showHours(String start, String end) {
+  final hm = DateFormat('HH:mm');
+  return '${hm.format(fromApiTime(start))}–${hm.format(fromApiTime(end))}';
+}

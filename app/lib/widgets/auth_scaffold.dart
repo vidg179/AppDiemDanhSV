@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
+import '../core/ui.dart';
 import 'hutech_logo.dart';
 
-/// Khung chung cho các màn tài khoản: logo, tiêu đề, nội dung giữa màn hình.
+/// Khung chung cho các màn tài khoản: dải xanh HUTECH có logo và vạch vàng, form bên dưới.
 class AuthScaffold extends StatelessWidget {
   const AuthScaffold({
     super.key,
@@ -21,40 +23,64 @@ class AuthScaffold extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     final text = Theme.of(context).textTheme;
-    return Scaffold(
-      appBar: showBack ? AppBar(backgroundColor: Colors.transparent) : null,
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 420),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  const Align(
-                    alignment: Alignment.centerLeft,
-                    child: HutechLogo(height: 44),
+    final top = MediaQuery.paddingOf(context).top;
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle.light,
+      child: Scaffold(
+        body: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Container(
+                color: brandBlueDeep,
+                padding: EdgeInsets.fromLTRB(
+                  showBack ? 8 : 24,
+                  top + (showBack ? 4 : 28),
+                  24,
+                  28,
+                ),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (showBack) ...[
+                        BackButton(
+                          color: Colors.white,
+                          onPressed: () => Navigator.maybePop(context),
+                        ),
+                        const SizedBox(width: 8),
+                      ],
+                      HutechLogo(height: showBack ? 30 : 40),
+                    ],
                   ),
-                  const SizedBox(height: 20),
-                  Text(
-                    title,
-                    style: text.headlineMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    subtitle,
-                    style: text.bodyLarge?.copyWith(
-                      color: scheme.onSurfaceVariant,
-                    ),
-                  ),
-                  const SizedBox(height: 28),
-                  child,
-                ],
+                ),
               ),
-            ),
+              Container(height: 6, color: brandYellow),
+              Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 440),
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(24, 28, 24, 32),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Text(title, style: text.headlineMedium),
+                        const SizedBox(height: 8),
+                        Text(
+                          subtitle,
+                          style: text.bodyLarge?.copyWith(
+                            color: scheme.onSurfaceVariant,
+                          ),
+                        ),
+                        const SizedBox(height: 28),
+                        child,
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ),

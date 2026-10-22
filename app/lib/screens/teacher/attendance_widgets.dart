@@ -56,9 +56,14 @@ class AttendanceSummary extends StatelessWidget {
         runSpacing: 8,
         crossAxisAlignment: WrapCrossAlignment.center,
         children: [
-          Text(
-            'Có mặt $attended/${roster.length}',
-            style: Theme.of(context).textTheme.titleMedium,
+          Padding(
+            padding: const EdgeInsets.only(right: 4),
+            child: Text(
+              'Có mặt $attended/${roster.length}',
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                fontFeatures: const [FontFeature.tabularFigures()],
+              ),
+            ),
           ),
           for (final s in ['present', 'late', 'excused', 'absent', 'pending'])
             if (count(s) > 0)
@@ -89,7 +94,7 @@ class RosterTile extends StatelessWidget {
     ].join(' · ');
     return ListTile(
       onTap: onTap,
-      leading: CircleAvatar(child: Text(initials(row['fullName']))),
+      leading: Avatar(row['fullName']),
       title: Text(row['fullName']),
       subtitle: Text(
         row['note'] == null ? details : '$details\nGhi chú: ${row['note']}',

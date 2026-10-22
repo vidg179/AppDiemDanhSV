@@ -105,7 +105,7 @@ class _ClassStudentsScreenState extends State<ClassStudentsScreen> {
         emptyIcon: Icons.groups_outlined,
         emptyText: 'Lớp chưa có sinh viên. Bấm "Thêm sinh viên" để thêm.',
         itemBuilder: (context, s) => ListTile(
-          leading: CircleAvatar(child: Text(initials(s['fullName']))),
+          leading: Avatar(s['fullName']),
           title: Text(s['fullName']),
           subtitle: Text(
             [

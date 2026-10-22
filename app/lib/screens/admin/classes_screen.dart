@@ -75,7 +75,7 @@ class _ClassesScreenState extends State<ClassesScreen> {
         emptyIcon: Icons.school_outlined,
         emptyText: 'Chưa có lớp học nào. Bấm "Thêm lớp" để tạo lớp đầu tiên.',
         itemBuilder: (context, c) => Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 4),
           child: ClassCard(
             data: c,
             onTap: () => _openStudents(c),

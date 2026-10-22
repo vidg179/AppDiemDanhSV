@@ -32,7 +32,7 @@ Future<bool> confirm(
           style: FilledButton.styleFrom(
             backgroundColor: Theme.of(ctx).colorScheme.error,
             foregroundColor: Theme.of(ctx).colorScheme.onError,
-            minimumSize: const Size(0, 40),
+            minimumSize: const Size(0, 44),
           ),
           onPressed: () => Navigator.pop(ctx, true),
           child: Text(action),
@@ -43,28 +43,57 @@ Future<bool> confirm(
   return ok == true;
 }
 
-/// Avatar trên AppBar: mở Hồ sơ, đăng xuất thì quay về màn đăng nhập.
-class ProfileButton extends StatelessWidget {
-  const ProfileButton({super.key, this.onChanged});
+/// Chữ cái đầu của tên trên nền trung tính (không tô màu nhấn).
+class Avatar extends StatelessWidget {
+  const Avatar(this.name, {super.key, this.radius = 20});
 
-  final VoidCallback? onChanged;
+  final String name;
+  final double radius;
 
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    return IconButton(
-      tooltip: 'Hồ sơ',
-      icon: CircleAvatar(
-        radius: 16,
-        backgroundColor: scheme.primaryContainer,
-        child: Text(
-          initials(Session.fullName),
-          style: TextStyle(
-            color: scheme.onPrimaryContainer,
-            fontWeight: FontWeight.w700,
-          ),
+    return CircleAvatar(
+      radius: radius,
+      backgroundColor: scheme.surfaceContainerHighest,
+      child: Text(
+        initials(name),
+        style: TextStyle(
+          color: scheme.onSurface,
+          fontWeight: FontWeight.w600,
+          fontSize: radius * 0.8,
         ),
       ),
+    );
+  }
+}
+
+/// Avatar trên AppBar: mở Hồ sơ, đăng xuất thì quay về màn đăng nhập.
+class ProfileButton extends StatelessWidget {
+  const ProfileButton({super.key, this.onChanged, this.onBrand = false});
+
+  final VoidCallback? onChanged;
+
+  /// Đặt trên nền xanh HUTECH: avatar trắng, chữ xanh.
+  final bool onBrand;
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      tooltip: 'Hồ sơ',
+      icon: onBrand
+          ? CircleAvatar(
+              radius: 18,
+              backgroundColor: Colors.white,
+              child: Text(
+                initials(Session.fullName),
+                style: const TextStyle(
+                  color: brandBlueDeep,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            )
+          : Avatar(Session.fullName, radius: 18),
       onPressed: () async {
         await Navigator.push(
           context,
@@ -85,6 +114,65 @@ class ProfileButton extends StatelessWidget {
   }
 }
 
+/// Nhãn bo tròn: nền nhạt, chữ đậm cùng tông.
+class Pill extends StatelessWidget {
+  const Pill({
+    super.key,
+    required this.label,
+    required this.background,
+    required this.foreground,
+  });
+
+  final String label;
+  final Color background;
+  final Color foreground;
+
+  @override
+  Widget build(BuildContext context) => Container(
+    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+    decoration: BoxDecoration(
+      color: background,
+      borderRadius: BorderRadius.circular(999),
+    ),
+    child: Text(
+      label,
+      style: TextStyle(
+        color: foreground,
+        fontSize: 12.5,
+        height: 1.2,
+        fontWeight: FontWeight.w600,
+      ),
+    ),
+  );
+}
+
+/// Cặp màu (nền nhạt, chữ đậm) cho một trạng thái hoặc vai trò.
+({Color bg, Color fg}) _tone(BuildContext context, String key) {
+  final dark = Theme.of(context).brightness == Brightness.dark;
+  return switch (key) {
+    'present' || 'approved' || 'teacher' =>
+      dark
+          ? (bg: const Color(0xFF163A23), fg: const Color(0xFFA8E5BC))
+          : (bg: const Color(0xFFDDF3E4), fg: const Color(0xFF0E5A2A)),
+    'late' =>
+      dark
+          ? (bg: const Color(0xFF3D2C0A), fg: const Color(0xFFFFD58A))
+          : (bg: const Color(0xFFFFEFCC), fg: const Color(0xFF7A4A00)),
+    'absent' || 'rejected' || 'admin' =>
+      dark
+          ? (bg: const Color(0xFF44181A), fg: const Color(0xFFFFB4B0))
+          : (bg: const Color(0xFFFCE1E1), fg: const Color(0xFF8E1414)),
+    'excused' || 'student' =>
+      dark
+          ? (bg: const Color(0xFF12324B), fg: const Color(0xFFCFE6F8))
+          : (bg: const Color(0xFFDCEBF7), fg: const Color(0xFF023A63)),
+    _ =>
+      dark
+          ? (bg: const Color(0xFF2C2E33), fg: const Color(0xFFC9CDD3))
+          : (bg: const Color(0xFFE6EAEF), fg: const Color(0xFF3F4A56)),
+  };
+}
+
 class RoleChip extends StatelessWidget {
   const RoleChip(this.role, {super.key});
 
@@ -92,38 +180,25 @@ class RoleChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dark = Theme.of(context).brightness == Brightness.dark;
-    final color = switch (role) {
-      'admin' => dark ? Colors.deepPurple.shade200 : Colors.deepPurple,
-      'teacher' => dark ? Colors.orange.shade300 : Colors.deepOrange.shade700,
-      _ => dark ? Colors.lightBlue.shade200 : brandColor,
-    };
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.14),
-        borderRadius: BorderRadius.circular(999),
-      ),
-      child: Text(
-        roleText[role] ?? role,
-        style: TextStyle(
-          color: color,
-          fontSize: 12,
-          fontWeight: FontWeight.w600,
-        ),
-      ),
+    final t = _tone(context, role);
+    return Pill(
+      label: roleText[role] ?? role,
+      background: t.bg,
+      foreground: t.fg,
     );
   }
 }
 
+/// Màu đậm của trạng thái (chấm trên bản đồ, biểu tượng).
 Color statusColor(BuildContext context, String status) {
   final dark = Theme.of(context).brightness == Brightness.dark;
   return switch (status) {
     'present' ||
-    'approved' => dark ? Colors.green.shade300 : Colors.green.shade700,
-    'late' => dark ? Colors.amber.shade300 : Colors.orange.shade800,
-    'absent' || 'rejected' => dark ? Colors.red.shade300 : Colors.red.shade700,
-    'excused' => dark ? Colors.lightBlue.shade200 : Colors.blue.shade700,
+    'approved' => dark ? const Color(0xFF7BD497) : const Color(0xFF16803C),
+    'late' => dark ? const Color(0xFFFFC857) : const Color(0xFFB86E00),
+    'absent' ||
+    'rejected' => dark ? const Color(0xFFFF8A80) : const Color(0xFFC4141F),
+    'excused' => dark ? const Color(0xFF6AB3EA) : brandColor,
     _ => Theme.of(context).colorScheme.onSurfaceVariant,
   };
 }
@@ -150,25 +225,86 @@ class StatusChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = statusColor(context, status);
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.14),
-        borderRadius: BorderRadius.circular(999),
+    final t = _tone(context, status);
+    return Pill(
+      label: labels[status] ?? status,
+      background: t.bg,
+      foreground: t.fg,
+    );
+  }
+}
+
+/// Nút điểm danh: vàng khiên HUTECH, chỉ dùng cho hành động điểm danh.
+class AttendanceButton extends StatelessWidget {
+  const AttendanceButton({
+    super.key,
+    required this.icon,
+    required this.label,
+    required this.onPressed,
+  });
+
+  final IconData icon;
+  final String label;
+  final VoidCallback? onPressed;
+
+  @override
+  Widget build(BuildContext context) => FilledButton.icon(
+    style: FilledButton.styleFrom(
+      backgroundColor: Theme.of(context).colorScheme.tertiary,
+      foregroundColor: onBrandYellow,
+      minimumSize: const Size.fromHeight(56),
+      textStyle: const TextStyle(
+        fontFamily: fontFamily,
+        fontSize: 17,
+        fontWeight: FontWeight.w700,
       ),
-      child: Text(
-        labels[status] ?? status,
-        style: TextStyle(
-          color: color,
-          fontSize: 12,
-          fontWeight: FontWeight.w600,
+    ),
+    onPressed: onPressed,
+    icon: Icon(icon, size: 24),
+    label: Text(label),
+  );
+}
+
+/// Ô ngày cho danh sách buổi học: số ngày lớn, thứ nhỏ bên dưới.
+class DateBlock extends StatelessWidget {
+  const DateBlock(this.date, {super.key});
+
+  final DateTime date;
+
+  static const _weekday = ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'];
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return SizedBox(
+      width: 44,
+      child: FittedBox(
+        fit: BoxFit.scaleDown,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              '${date.day}',
+              style: TextStyle(
+                fontSize: 22,
+                height: 1.1,
+                fontWeight: FontWeight.w600,
+                color: scheme.onSurface,
+                fontFeatures: const [FontFeature.tabularFigures()],
+              ),
+            ),
+            Text(
+              '${_weekday[date.weekday - 1]} · ${date.month}',
+              style: TextStyle(fontSize: 12, color: scheme.onSurfaceVariant),
+            ),
+          ],
         ),
       ),
     );
   }
 }
 
+/// Khung trống / lỗi: giữ khung, một câu, có nút thử lại khi cần.
 class InfoBox extends StatelessWidget {
   const InfoBox({
     super.key,
@@ -186,23 +322,25 @@ class InfoBox extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
     return Container(
       margin: const EdgeInsets.all(16),
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
       decoration: BoxDecoration(
-        color: scheme.surfaceContainerHighest.withValues(alpha: 0.5),
-        borderRadius: BorderRadius.circular(16),
+        color: scheme.surfaceContainerLowest,
+        borderRadius: BorderRadius.circular(20),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 36, color: scheme.onSurfaceVariant),
-          const SizedBox(height: 8),
+          Icon(icon, size: 28, color: scheme.onSurfaceVariant),
+          const SizedBox(height: 10),
           Text(
             text,
             textAlign: TextAlign.center,
-            style: TextStyle(color: scheme.onSurfaceVariant),
+            style: TextStyle(color: scheme.onSurfaceVariant, height: 1.45),
           ),
-          if (onRetry != null)
+          if (onRetry != null) ...[
+            const SizedBox(height: 4),
             TextButton(onPressed: onRetry, child: const Text('Thử lại')),
+          ],
         ],
       ),
     );
@@ -259,7 +397,7 @@ class AsyncListView extends StatelessWidget {
         }
         return ListView(
           physics: const AlwaysScrollableScrollPhysics(),
-          padding: const EdgeInsets.only(bottom: 96),
+          padding: const EdgeInsets.fromLTRB(12, 16, 12, 96),
           children: children,
         );
       },

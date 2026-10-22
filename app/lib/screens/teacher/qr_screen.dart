@@ -163,15 +163,38 @@ class _QrScreenState extends State<QrScreen> {
                 backgroundColor: Colors.white,
               ),
             ),
-            const SizedBox(height: 16),
-            SelectableText(
-              'Mã: ${qr['qrToken']}',
-              style: const TextStyle(fontFamily: 'monospace', fontSize: 16),
-            ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 20),
             Text(
               '$mm:$ss',
               style: text.displaySmall?.copyWith(
+                fontWeight: FontWeight.w600,
+                letterSpacing: -0.5,
+                fontFeatures: const [FontFeature.tabularFigures()],
+              ),
+            ),
+            const SizedBox(height: 10),
+            // Vạch vàng rút ngắn dần theo thời gian còn lại của mã.
+            SizedBox(
+              width: 312,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(999),
+                child: LinearProgressIndicator(
+                  value: (left.inMilliseconds / (_validMinutes * 60000)).clamp(
+                    0.0,
+                    1.0,
+                  ),
+                  minHeight: 8,
+                  color: scheme.tertiary,
+                  backgroundColor: scheme.onSurface.withValues(alpha: 0.08),
+                ),
+              ),
+            ),
+            const SizedBox(height: 14),
+            SelectableText(
+              'Mã: ${qr['qrToken']}',
+              style: TextStyle(
+                fontSize: 15,
+                color: scheme.onSurfaceVariant,
                 fontFeatures: const [FontFeature.tabularFigures()],
               ),
             ),
@@ -228,10 +251,10 @@ class _QrScreenState extends State<QrScreen> {
                 Text(_error!, style: TextStyle(color: scheme.error)),
               ],
               const SizedBox(height: 12),
-              FilledButton.icon(
+              AttendanceButton(
                 onPressed: _loading ? null : _newQr,
-                icon: const Icon(Icons.qr_code_2),
-                label: const Text('Tạo mã mới (60 giây)'),
+                icon: Icons.qr_code_2,
+                label: 'Tạo mã mới (60 giây)',
               ),
             ],
           ),

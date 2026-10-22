@@ -76,7 +76,7 @@ class _AbsenceReviewScreenState extends State<AbsenceReviewScreen> {
                   ? 'Không có đơn nào chờ duyệt.'
                   : 'Không có đơn nào.',
               itemBuilder: (context, r) => ListTile(
-                leading: CircleAvatar(child: Text(initials(r['studentName']))),
+                leading: Avatar(r['studentName']),
                 title: Text(r['studentName']),
                 subtitle: Text(
                   '${r['classCode'] ?? r['className']} · ${r['sessionTitle']} · ${showDate(r['sessionStart'])}\n'

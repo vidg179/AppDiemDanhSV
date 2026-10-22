@@ -129,7 +129,8 @@ class _SessionDetailScreenState extends State<SessionDetailScreen> {
                   child: Row(
                     children: [
                       Expanded(
-                        child: FilledButton.icon(
+                        flex: 3,
+                        child: AttendanceButton(
                           onPressed: () async {
                             await Navigator.push(
                               context,
@@ -139,15 +140,16 @@ class _SessionDetailScreenState extends State<SessionDetailScreen> {
                             );
                             _reload();
                           },
-                          icon: const Icon(Icons.qr_code_2),
-                          label: const Text('Chiếu mã QR'),
+                          icon: Icons.qr_code_2,
+                          label: 'Chiếu mã QR',
                         ),
                       ),
-                      const SizedBox(width: 12),
+                      const SizedBox(width: 10),
                       Expanded(
+                        flex: 2,
                         child: OutlinedButton.icon(
                           style: OutlinedButton.styleFrom(
-                            minimumSize: const Size.fromHeight(52),
+                            minimumSize: const Size.fromHeight(56),
                           ),
                           onPressed: hasLocation && snap.hasData
                               ? () => Navigator.push(

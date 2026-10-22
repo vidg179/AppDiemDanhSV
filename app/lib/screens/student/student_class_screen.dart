@@ -92,19 +92,23 @@ class _StudentClassScreenState extends State<StudentClassScreen> {
                 final record = row['record'] as Map?;
                 final status = row['status'] as String;
                 final canLeave = status == 'pending' || status == 'absent';
-                return ListTile(
-                  title: Text(s['title']),
-                  subtitle: Text(
-                    [
-                      showRange(s['startTime'], s['endTime']),
-                      if (record?['checkInTime'] != null)
-                        'quét lúc ${showTime(record!['checkInTime']).substring(0, 5)}',
-                      if (record?['method'] == 'absence-request')
-                        'theo đơn xin phép',
-                    ].join(' · '),
+                return Card(
+                  child: ListTile(
+                    contentPadding: const EdgeInsets.fromLTRB(12, 8, 14, 8),
+                    leading: DateBlock(fromApiTime(s['startTime'])),
+                    title: Text(s['title']),
+                    subtitle: Text(
+                      [
+                        showHours(s['startTime'], s['endTime']),
+                        if (record?['checkInTime'] != null)
+                          'quét lúc ${showTime(record!['checkInTime']).substring(0, 5)}',
+                        if (record?['method'] == 'absence-request')
+                          'theo đơn xin phép',
+                      ].join(' · '),
+                    ),
+                    trailing: StatusChip(status),
+                    onTap: canLeave ? () => _requestLeave(s) : null,
                   ),
-                  trailing: StatusChip(status),
-                  onTap: canLeave ? () => _requestLeave(s) : null,
                 );
               },
             ),

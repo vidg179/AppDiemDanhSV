@@ -83,10 +83,10 @@ class _FaceRegisterScreenState extends State<FaceRegisterScreen> {
               child: ListTile(
                 leading: CircleAvatar(
                   backgroundColor: i < _embeddings.length
-                      ? brandColor
+                      ? scheme.primary
                       : scheme.surfaceContainerHighest,
                   foregroundColor: i < _embeddings.length
-                      ? Colors.white
+                      ? scheme.onPrimary
                       : scheme.onSurfaceVariant,
                   child: Icon(
                     i < _embeddings.length ? Icons.check : Icons.face_outlined,

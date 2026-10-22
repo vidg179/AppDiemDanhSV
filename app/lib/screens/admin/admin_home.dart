@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../widgets/common.dart';
+import '../../core/session.dart';
+import '../../widgets/home_shell.dart';
 import 'classes_screen.dart';
 import 'users_screen.dart';
 
@@ -18,16 +19,23 @@ class _AdminHomeState extends State<AdminHome> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(_tab == 0 ? 'Quản lý lớp học' : 'Quản lý người dùng'),
-        actions: [
-          ProfileButton(onChanged: () => setState(() {})),
-          const SizedBox(width: 8),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          BrandHeader(
+            title: _tab == 0 ? 'Quản lý lớp học' : 'Quản lý người dùng',
+            subtitle: Session.fullName == 'Quản trị viên'
+                ? 'Quản trị viên'
+                : '${Session.fullName} · Quản trị viên',
+            onProfileChanged: () => setState(() {}),
+          ),
+          Expanded(
+            child: IndexedStack(
+              index: _tab,
+              children: const [ClassesScreen(), UsersScreen()],
+            ),
+          ),
         ],
-      ),
-      body: IndexedStack(
-        index: _tab,
-        children: const [ClassesScreen(), UsersScreen()],
       ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _tab,

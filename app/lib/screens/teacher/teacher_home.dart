@@ -15,16 +15,13 @@ class TeacherHome extends StatelessWidget {
       context,
       MaterialPageRoute(builder: (_) => TeacherClassScreen(classData: cls)),
     ),
-    header: Card(
-      child: ListTile(
-        leading: const Icon(Icons.mark_email_unread_outlined),
-        title: const Text('Đơn xin phép'),
-        subtitle: const Text('Xem minh chứng, duyệt hoặc từ chối'),
-        trailing: const Icon(Icons.chevron_right),
-        onTap: () => Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => const AbsenceReviewScreen()),
-        ),
+    header: ShortcutCard(
+      icon: Icons.mark_email_unread_outlined,
+      title: 'Đơn xin phép',
+      subtitle: 'Xem minh chứng, duyệt hoặc từ chối',
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const AbsenceReviewScreen()),
       ),
     ),
   );

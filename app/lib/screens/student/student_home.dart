@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../widgets/common.dart';
 import '../../widgets/home_shell.dart';
 import 'my_absence_screen.dart';
 import 'scan_screen.dart';
@@ -19,27 +20,22 @@ class StudentHome extends StatelessWidget {
     header: Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        FilledButton.icon(
+        AttendanceButton(
           onPressed: () => Navigator.push(
             context,
             MaterialPageRoute(builder: (_) => const ScanScreen()),
           ),
-          icon: const Icon(Icons.qr_code_scanner),
-          label: const Text('Quét QR điểm danh'),
+          icon: Icons.qr_code_scanner,
+          label: 'Quét QR điểm danh',
         ),
-        const SizedBox(height: 8),
-        Card(
-          child: ListTile(
-            leading: const Icon(Icons.description_outlined),
-            title: const Text('Đơn xin phép của tôi'),
-            subtitle: const Text(
-              'Để xin phép: vào lớp, bấm vào buổi muốn nghỉ',
-            ),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const MyAbsenceScreen()),
-            ),
+        const SizedBox(height: 12),
+        ShortcutCard(
+          icon: Icons.description_outlined,
+          title: 'Đơn xin phép của tôi',
+          subtitle: 'Để xin phép: vào lớp, bấm vào buổi muốn nghỉ',
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const MyAbsenceScreen()),
           ),
         ),
       ],

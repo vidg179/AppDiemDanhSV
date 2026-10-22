@@ -159,7 +159,7 @@ class _UserTile extends StatelessWidget {
     ].join(' · ');
     return ListTile(
       onTap: onEdit,
-      leading: CircleAvatar(child: Text(initials(user['fullName']))),
+      leading: Avatar(user['fullName']),
       title: Row(
         children: [
           Flexible(

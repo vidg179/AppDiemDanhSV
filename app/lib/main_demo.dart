@@ -10,6 +10,7 @@ import 'package:http/testing.dart';
 import 'core/api.dart';
 import 'core/session.dart';
 import 'core/ui.dart';
+import 'screens/auth/login_screen.dart';
 
 String _iso(Duration d) => DateTime.now().add(d).toUtc().toIso8601String();
 
@@ -136,6 +137,12 @@ http.Response _json(Object body) => http.Response.bytes(
 
 Future<http.Response> _handler(http.Request r) async {
   final p = r.url.path;
+  if (r.method == 'POST' && p.endsWith('/qr')) {
+    return _json({
+      'qrToken': 'K7M2QX',
+      'expiresAt': _iso(const Duration(seconds: 60)),
+    });
+  }
   if (r.method != 'GET') return _json({'ok': true});
   if (p == '/api/classes') return _json(_classes);
   if (p == '/api/users') {
@@ -206,26 +213,29 @@ Future<http.Response> _handler(http.Request r) async {
 
 final _student = _students.first;
 
-void main() {
-  WidgetsFlutterBinding.ensureInitialized();
+/// Dựng app demo cho một vai trò (dùng chung cho web demo và ảnh chụp giao diện).
+Widget demoApp(String role, {ThemeMode mode = ThemeMode.system}) {
   Api.client = MockClient(_handler);
   Api.token = 'demo';
-  final role = Uri.base.queryParameters['role'] ?? 'student';
   Session.user = switch (role) {
     'admin' => _admin,
     'teacher' => _teacher,
     _ => _student,
   };
-  runApp(
-    MaterialApp(
-      title: 'Điểm danh HUTECH (demo)',
-      debugShowCheckedModeBanner: false,
-      theme: buildTheme(Brightness.light),
-      darkTheme: buildTheme(Brightness.dark),
-      locale: const Locale('vi'),
-      supportedLocales: const [Locale('vi'), Locale('en')],
-      localizationsDelegates: GlobalMaterialLocalizations.delegates,
-      home: homeFor(role),
-    ),
+  return MaterialApp(
+    title: 'Điểm danh HUTECH (demo)',
+    debugShowCheckedModeBanner: false,
+    theme: buildTheme(Brightness.light),
+    darkTheme: buildTheme(Brightness.dark),
+    themeMode: mode,
+    locale: const Locale('vi'),
+    supportedLocales: const [Locale('vi'), Locale('en')],
+    localizationsDelegates: GlobalMaterialLocalizations.delegates,
+    home: role == 'login' ? const LoginScreen() : homeFor(role),
   );
+}
+
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(demoApp(Uri.base.queryParameters['role'] ?? 'student'));
 }

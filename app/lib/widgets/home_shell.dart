@@ -1,11 +1,79 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../core/api.dart';
 import '../core/session.dart';
+import '../core/ui.dart';
 import 'common.dart';
 import 'hutech_logo.dart';
 
-/// Khung trang chủ dùng chung: lời chào, vai trò, danh sách lớp.
+/// Đầu trang màu xanh HUTECH: logo, tên người dùng, vai trò, vạch vàng khiên bên dưới.
+class BrandHeader extends StatelessWidget {
+  const BrandHeader({
+    super.key,
+    required this.title,
+    this.subtitle,
+    this.onProfileChanged,
+  });
+
+  final String title;
+  final String? subtitle;
+  final VoidCallback? onProfileChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final text = Theme.of(context).textTheme;
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle.light,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Container(
+            color: brandBlueDeep,
+            padding: EdgeInsets.fromLTRB(
+              20,
+              MediaQuery.paddingOf(context).top + 12,
+              8,
+              22,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    const HutechLogo(height: 26),
+                    const Spacer(),
+                    ProfileButton(onBrand: true, onChanged: onProfileChanged),
+                  ],
+                ),
+                const SizedBox(height: 22),
+                Padding(
+                  padding: const EdgeInsets.only(right: 12),
+                  child: Text(
+                    title,
+                    style: text.headlineMedium?.copyWith(color: Colors.white),
+                  ),
+                ),
+                if (subtitle != null) ...[
+                  const SizedBox(height: 4),
+                  Text(
+                    subtitle!,
+                    style: text.bodyLarge?.copyWith(
+                      color: Colors.white.withValues(alpha: 0.82),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+          Container(height: 6, color: brandYellow),
+        ],
+      ),
+    );
+  }
+}
+
+/// Khung trang chủ dùng chung: đầu trang HUTECH, hành động chính, danh sách lớp.
 class HomeShell extends StatefulWidget {
   const HomeShell({
     super.key,
@@ -39,88 +107,106 @@ class _HomeShellState extends State<HomeShell> {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
     final text = Theme.of(context).textTheme;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Align(
-          alignment: Alignment.centerLeft,
-          child: HutechLogo(height: 24),
-        ),
-        actions: [
-          ProfileButton(onChanged: () => setState(() {})),
-          const SizedBox(width: 8),
-        ],
-      ),
       body: RefreshIndicator(
         onRefresh: _reload,
         child: ListView(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
+          padding: EdgeInsets.zero,
           children: [
-            Text(
-              'Xin chào,',
-              style: text.titleMedium?.copyWith(color: scheme.onSurfaceVariant),
+            BrandHeader(
+              title: Session.fullName,
+              subtitle: roleText[Session.role],
+              onProfileChanged: () => setState(() {}),
             ),
-            Text(
-              Session.fullName,
-              style: text.headlineSmall?.copyWith(fontWeight: FontWeight.w700),
-            ),
-            const SizedBox(height: 8),
-            Align(
-              alignment: Alignment.centerLeft,
-              child: RoleChip(Session.role),
-            ),
-            if (widget.header != null) ...[
-              const SizedBox(height: 16),
-              widget.header!,
-            ],
-            const SizedBox(height: 24),
-            Text(
-              widget.classesTitle,
-              style: text.titleLarge?.copyWith(fontWeight: FontWeight.w600),
-            ),
-            const SizedBox(height: 8),
-            FutureBuilder<List<dynamic>>(
-              future: _classes,
-              builder: (context, snap) {
-                if (snap.connectionState != ConnectionState.done) {
-                  return const Padding(
-                    padding: EdgeInsets.all(32),
-                    child: Center(child: CircularProgressIndicator()),
-                  );
-                }
-                if (snap.hasError) {
-                  return InfoBox(
-                    icon: Icons.cloud_off,
-                    text: snap.error.toString(),
-                    onRetry: _reload,
-                  );
-                }
-                if (snap.data!.isEmpty) {
-                  return InfoBox(
-                    icon: Icons.school_outlined,
-                    text: widget.emptyText,
-                  );
-                }
-                return Column(
-                  children: [
-                    for (final c in snap.data!)
-                      ClassCard(
-                        data: c,
-                        onTap: widget.onClassTap == null
-                            ? null
-                            : () => widget.onClassTap!(c),
-                      ),
-                  ],
-                );
-              },
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 20, 16, 32),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  ?widget.header,
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(
+                      4,
+                      widget.header == null ? 4 : 28,
+                      4,
+                      10,
+                    ),
+                    child: Text(widget.classesTitle, style: text.titleLarge),
+                  ),
+                  FutureBuilder<List<dynamic>>(
+                    future: _classes,
+                    builder: (context, snap) {
+                      if (snap.connectionState != ConnectionState.done) {
+                        return const Padding(
+                          padding: EdgeInsets.all(32),
+                          child: Center(child: CircularProgressIndicator()),
+                        );
+                      }
+                      if (snap.hasError) {
+                        return InfoBox(
+                          icon: Icons.cloud_off,
+                          text: snap.error.toString(),
+                          onRetry: _reload,
+                        );
+                      }
+                      if (snap.data!.isEmpty) {
+                        return InfoBox(
+                          icon: Icons.school_outlined,
+                          text: widget.emptyText,
+                        );
+                      }
+                      return Column(
+                        children: [
+                          for (final c in snap.data!)
+                            ClassCard(
+                              data: c,
+                              onTap: widget.onClassTap == null
+                                  ? null
+                                  : () => widget.onClassTap!(c),
+                            ),
+                        ],
+                      );
+                    },
+                  ),
+                ],
+              ),
             ),
           ],
         ),
       ),
     );
   }
+}
+
+/// Lối tắt trên trang chủ: thẻ trắng, tiêu đề + một dòng mô tả, mũi tên.
+class ShortcutCard extends StatelessWidget {
+  const ShortcutCard({
+    super.key,
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) => Card(
+    margin: EdgeInsets.zero,
+    child: ListTile(
+      contentPadding: const EdgeInsets.fromLTRB(18, 8, 12, 8),
+      leading: Icon(icon, color: Theme.of(context).colorScheme.onSurface),
+      title: Text(title),
+      subtitle: Text(subtitle),
+      trailing: const Icon(Icons.chevron_right),
+      onTap: onTap,
+    ),
+  );
 }
 
 class ClassCard extends StatelessWidget {
@@ -133,43 +219,68 @@ class ClassCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    final details = [
+    final text = Theme.of(context).textTheme;
+    final muted = text.bodyMedium?.copyWith(color: scheme.onSurfaceVariant);
+    final where = [
+      data['code'],
       if (data['subject'] != null) data['subject'],
       if (data['room'] != null) 'Phòng ${data['room']}',
-      '${data['studentCount']} sinh viên',
     ].join(' · ');
     final teacher = data['teacherName'] == null
         ? 'Chưa phân công giảng viên'
-        : 'GV: ${data['teacherName']}';
+        : 'GV ${data['teacherName']}';
     return Card(
       margin: const EdgeInsets.only(bottom: 10),
-      child: ListTile(
+      child: InkWell(
         onTap: onTap,
-        contentPadding: const EdgeInsets.fromLTRB(16, 6, 8, 6),
-        leading: Container(
-          width: 72,
-          height: 32,
-          alignment: Alignment.center,
-          padding: const EdgeInsets.symmetric(vertical: 6),
-          decoration: BoxDecoration(
-            color: scheme.secondaryContainer,
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Text(
-            data['code'],
-            style: TextStyle(
-              color: scheme.onSecondaryContainer,
-              fontWeight: FontWeight.w600,
-            ),
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(18, 16, trailing == null ? 12 : 4, 16),
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      data['name'],
+                      style: text.titleMedium?.copyWith(height: 1.3),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(where, style: muted),
+                    const SizedBox(height: 10),
+                    Row(
+                      children: [
+                        Text(
+                          '${data['studentCount']}',
+                          style: text.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.w600,
+                            fontFeatures: const [FontFeature.tabularFigures()],
+                          ),
+                        ),
+                        Text(' sinh viên', style: muted),
+                        Text('  ·  ', style: muted),
+                        Flexible(
+                          child: Text(
+                            teacher,
+                            style: muted,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              trailing ??
+                  (onTap == null
+                      ? const SizedBox.shrink()
+                      : Icon(
+                          Icons.chevron_right,
+                          color: scheme.onSurfaceVariant,
+                        )),
+            ],
           ),
         ),
-        title: Text(
-          data['name'],
-          style: const TextStyle(fontWeight: FontWeight.w600),
-        ),
-        subtitle: Text('$details\n$teacher'),
-        isThreeLine: true,
-        trailing: trailing,
       ),
     );
   }

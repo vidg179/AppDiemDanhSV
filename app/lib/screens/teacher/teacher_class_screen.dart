@@ -142,17 +142,20 @@ class _SessionTile extends StatelessWidget {
       if (session['latitude'] != null) 'GPS',
       if (session['requireFace'] == true) 'Khuôn mặt',
     ];
-    return ListTile(
-      onTap: onTap,
-      leading: CircleAvatar(child: Text('${start.day}')),
-      title: Text(session['title']),
-      subtitle: Text(
-        [
-          showRange(session['startTime'], session['endTime']),
-          ...flags,
-        ].join(' · '),
+    return Card(
+      child: ListTile(
+        onTap: onTap,
+        contentPadding: const EdgeInsets.fromLTRB(12, 8, 14, 8),
+        leading: DateBlock(start),
+        title: Text(session['title']),
+        subtitle: Text(
+          [
+            showHours(session['startTime'], session['endTime']),
+            ...flags,
+          ].join(' · '),
+        ),
+        trailing: StatusChip(status, labels: {status: label}),
       ),
-      trailing: StatusChip(status, labels: {status: label}),
     );
   }
 }
