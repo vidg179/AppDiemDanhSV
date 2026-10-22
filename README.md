@@ -222,4 +222,11 @@ Cách cấu hình gửi OTP qua email, danh sách đầy đủ endpoint và hư�
 
 - **Môn học:** Lập trình thiết bị di động
 - **Trường:** Đại học Công nghệ TP.HCM (HUTECH)
-- **Thành viên:** *(điền họ tên và MSSV)*
+- **Thành viên:**
+
+  | Họ và tên | MSSV |
+  |---|---|
+  | Dương Gia Vĩ | 2380602525 |
+  | Bùi Nguyên Vũ | 2380602578 |
+  | Nguyễn Quốc | 2380601853 |
+  | Nguyễn Minh Nhật | 2380601553 |
