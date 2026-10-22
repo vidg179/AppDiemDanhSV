@@ -88,4 +88,7 @@ Không có khóa Firebase, mật khẩu, khóa JWT hay tài khoản demo nào tr
 ## Thông tin nhóm
 
 - Môn học: Lập trình thiết bị di động, Trường Đại học Công nghệ TP.HCM (HUTECH)
-- Thành viên: *(điền họ tên, MSSV các thành viên)*
+- Thành viên: + Dương Gia Vĩ 2380602525 
+              + Bùi Nguyên Vũ 2380602578
+              + Nguyễn Quốc 2380601853
+              + Nguyễn Minh Nhật 2380601553
