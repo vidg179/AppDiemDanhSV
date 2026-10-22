@@ -15,7 +15,6 @@ class ForgotPasswordScreen extends StatefulWidget {
 class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   final _form = GlobalKey<FormState>();
   final _username = TextEditingController();
-  String _channel = 'email';
   bool _busy = false;
 
   @override
@@ -30,7 +29,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     try {
       final challenge = await Api.post('/api/auth/forgot-password', {
         'username': _username.text.trim(),
-        'otpChannel': _channel,
+        'otpChannel': 'email',
       });
       if (!mounted) return;
       Navigator.pushReplacement(
@@ -65,10 +64,6 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               onFieldSubmitted: (_) => _send(),
             ),
             const SizedBox(height: 18),
-            OtpChannelPicker(
-              value: _channel,
-              onChanged: (v) => setState(() => _channel = v),
-            ),
             const SizedBox(height: 24),
             BusyButton(label: 'Gửi mã OTP', busy: _busy, onPressed: _send),
           ],

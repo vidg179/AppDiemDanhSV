@@ -22,7 +22,6 @@ class _LoginScreenState extends State<LoginScreen> {
   final _form = GlobalKey<FormState>();
   final _username = TextEditingController();
   final _password = TextEditingController();
-  String _channel = 'email';
   bool _hidePassword = true;
   bool _busy = false;
 
@@ -74,7 +73,7 @@ class _LoginScreenState extends State<LoginScreen> {
       final challenge = await Api.post('/api/auth/login', {
         'username': _username.text.trim(),
         'password': _password.text,
-        'otpChannel': _channel,
+        'otpChannel': 'email',
       });
       if (!mounted) return;
       if (challenge['token'] != null) {
@@ -153,10 +152,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   child: const Text('Quên mật khẩu?'),
                 ),
-              ),
-              OtpChannelPicker(
-                value: _channel,
-                onChanged: (v) => setState(() => _channel = v),
               ),
               const SizedBox(height: 24),
               BusyButton(label: 'Đăng nhập', busy: _busy, onPressed: _login),

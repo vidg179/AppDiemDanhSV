@@ -51,8 +51,8 @@ Xem log khi có lỗi:
 ssh root@103.20.30.40 "cd /opt/bakhi-api && docker compose logs --tail 100"
 ```
 
-**Sau lần deploy đầu tiên, bắt buộc:** đăng nhập `admin / Admin@123` trên Swagger → `POST /api/users/me/change-password` đặt mật khẩu mạnh,
-và `PUT /api/users/{id}` đổi email admin thành email thật (để nhận OTP).
+**Sau lần deploy đầu tiên, bắt buộc:** đăng nhập tài khoản admin (tạo từ cấu hình `SeedAdmin`) trên Swagger → `POST /api/users/me/change-password` đặt mật khẩu mạnh,
+và `PUT /api/users/{id}` đổi email admin thành email thật (để nhận OTP). Không để mật khẩu mặc định khi server đã công khai.
 
 **Khi thầy chấm:** OTP được gửi về email của tài khoản, nên thầy không nhận được mã của tài khoản demo.
 Trong thời gian chấm có thể đặt `Otp__ReturnCodeInResponse=true` trong `deploy/.env` rồi deploy lại,
